@@ -1,6 +1,7 @@
 import { UsersApiResponse } from "@/interface/user-interfaces";
+import { groupByDepartment } from "@/utils/group-by-department";
 
-const UserList = async () => {
+const DepartmentList = async () => {
   const response = await fetch("https://dummyjson.com/users");
 
   if (!response.ok) return <div>Error: fetching data</div>;
@@ -9,11 +10,13 @@ const UserList = async () => {
 
   if (!data.users) return <div>Error: fetching data</div>;
 
+  const departments = groupByDepartment(data.users);
+
   return (
     <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto">
-      {JSON.stringify(data.users, null, 2)}
+      {JSON.stringify(departments, null, 2)}
     </pre>
   );
 };
 
-export default UserList;
+export default DepartmentList;
