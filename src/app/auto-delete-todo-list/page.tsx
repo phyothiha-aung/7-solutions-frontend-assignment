@@ -1,12 +1,17 @@
 "use client";
 import { products } from "@/data/products";
 import { ProductItem } from "@/interface/product-interfaces";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const RETURN_DELAY = 5000;
 
 const AutoDeleteTodoList = () => {
   const [availableItems, setAvailableItems] = useState<ProductItem[]>(products);
   const [fruits, setFruits] = useState<ProductItem[]>([]);
   const [vegetables, setVegetables] = useState<ProductItem[]>([]);
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map(),
+  );
 
   const handleMoveToCategory = (item: ProductItem) => {
     setAvailableItems((prev) => prev.filter((p) => p.name !== item.name));
@@ -16,9 +21,17 @@ const AutoDeleteTodoList = () => {
     } else {
       setVegetables((prev) => [...prev, item]);
     }
+
+    const timer = setTimeout(() => handleReturnToMain(item), RETURN_DELAY);
+    timersRef.current.set(item.name, timer);
   };
 
   const handleReturnToMain = (item: ProductItem) => {
+    const timer = timersRef.current.get(item.name);
+    if (timer === undefined) return;
+    clearTimeout(timer);
+    timersRef.current.delete(item.name);
+
     if (item.type === "Fruit") {
       setFruits((prev) => prev.filter((p) => p.name !== item.name));
     } else {
@@ -27,6 +40,14 @@ const AutoDeleteTodoList = () => {
 
     setAvailableItems((prev) => [...prev, item]);
   };
+
+  useEffect(() => {
+    const timers = timersRef.current;
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+      timers.clear();
+    };
+  }, []);
 
   return (
     <main className="container mx-auto flex items-stretch gap-5 py-10 min-h-dvh">
