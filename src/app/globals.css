@@ -17,3 +17,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.item {
+  @apply text-center border border-gray-700 px-4 py-2 min-w-50 rounded-sm;
+}
+
+.product-col {
+  @apply flex flex-col gap-3 min-w-54 items-center;
+}

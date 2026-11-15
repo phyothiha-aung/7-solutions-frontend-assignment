@@ -9,11 +9,7 @@ export default function Home() {
   return (
     <main className="flex flex-col justify-center items-center gap-5 h-dvh">
       {nav.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className="text-center border border-gray-700 px-4 py-2 min-w-xs rounded-md"
-        >
+        <Link key={item.href} href={item.href} className="item">
           {item.label}
         </Link>
       ))}
