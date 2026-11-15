@@ -2,17 +2,7 @@ import { Departments } from "@/interface/department-interfaces";
 import { User } from "@/interface/user-interfaces";
 
 export const groupByDepartment = (users: User[]): Departments => {
-  const departmentTracker: {
-    [key: string]: {
-      male: number;
-      female: number;
-      ages: number[];
-      hair: {
-        [key: string]: number;
-      };
-      addressUser: { [key: string]: string };
-    };
-  } = {};
+  const departmentTracker: Departments = {};
 
   users.forEach((user) => {
     const dept = user.company.department;
@@ -21,7 +11,7 @@ export const groupByDepartment = (users: User[]): Departments => {
       departmentTracker[dept] = {
         male: 0,
         female: 0,
-        ages: [],
+        ageRange: "Infinity-0",
         hair: {},
         addressUser: {},
       };
@@ -32,7 +22,8 @@ export const groupByDepartment = (users: User[]): Departments => {
     if (user.gender.toLowerCase() === "male") current.male++;
     if (user.gender.toLowerCase() === "female") current.female++;
 
-    current.ages.push(user.age);
+    const [minAge, maxAge] = current.ageRange.split("-");
+    current.ageRange = `${Math.min(Number(minAge), user.age)}-${Math.max(Number(maxAge), user.age)}`;
 
     const hairColor = user.hair.color;
     current.hair[hairColor] = (current.hair[hairColor] || 0) + 1;
@@ -41,20 +32,5 @@ export const groupByDepartment = (users: User[]): Departments => {
     current.addressUser[fullName] = user.address.postalCode;
   });
 
-  const departmentsResult: Departments = {};
-
-  for (const [deptName, data] of Object.entries(departmentTracker)) {
-    const minAge = data.ages.length ? Math.min(...data.ages) : 0;
-    const maxAge = data.ages.length ? Math.max(...data.ages) : 0;
-
-    departmentsResult[deptName] = {
-      male: data.male,
-      female: data.female,
-      ageRange: `${minAge}-${maxAge}`,
-      hair: data.hair,
-      addressUser: data.addressUser,
-    };
-  }
-
-  return departmentsResult;
+  return departmentTracker;
 };
